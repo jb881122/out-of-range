@@ -1,0 +1,6 @@
+bin/
+obj-target/
+gen/
+obj-arm/
+tools/
+obj-host/
