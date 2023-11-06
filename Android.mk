@@ -1,4 +1,4 @@
-LOCAL_PATH:= $(call my-dir)
+LOCAL_PATH := $(call my-dir)
 
 
 
@@ -28,10 +28,11 @@ GEN := $(INTERMEDIATES)/gen/patch_code.c_gen
 LOCAL_SRC_FILES := src/aboot_image.c src/boot_image.c src/cmd_patch.c src/cmd_verify.c \
 		src/file_utils.c src/asm.c src/cmd_crc.c src/cmd_redirect.c src/config.c \
 		src/little_endian.c src/cmd_list.c src/cmd_undo.c src/crc.c src/main.c
+LOCAL_SRC_PATH := $(LOCAL_PATH)/src
 
 $(GEN):
 	mkdir -p $(dir $@)
-	arm-linux-androideabi-gcc -c -o $(@:%.c_gen=%.o) $(LOCAL_PATH)/src/patch_code.S
+	arm-linux-androideabi-gcc -c -o $(@:%.c_gen=%.o) $(LOCAL_SRC_PATH)/$(notdir $(@:%.c_gen=%.S))
 	arm-linux-androideabi-objcopy -O binary $(@:%.c_gen=%.o) $(@:%.c_gen=%.bin)
 	bin_to_c $(@:%.c_gen=%.bin) $(notdir $(@:%.c_gen=%)) $@
 
