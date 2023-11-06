@@ -17,7 +17,6 @@ include $(BUILD_HOST_EXECUTABLE)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := oor
-LOCAL_MODULE_DEPENDS := bin_to_c
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT)/bin
 LOCAL_MODULE_CLASS := EXECUTABLES
@@ -32,11 +31,11 @@ LOCAL_SRC_FILES := src/aboot_image.c src/boot_image.c src/cmd_patch.c src/cmd_ve
 		src/little_endian.c src/cmd_list.c src/cmd_undo.c src/crc.c src/main.c
 LOCAL_SRC_PATH := $(LOCAL_PATH)/src
 
-$(GEN):
+$(GEN): $(HOST_OUT_EXECUTABLES)/bin_to_c
 	mkdir -p $(dir $@)
 	arm-linux-androideabi-gcc -c -o $(@:%.c_gen=%.o) $(LOCAL_SRC_PATH)/$(notdir $(@:%.c_gen=%.S))
 	arm-linux-androideabi-objcopy -O binary $(@:%.c_gen=%.o) $(@:%.c_gen=%.bin)
-	bin_to_c $(@:%.c_gen=%.bin) $(notdir $(@:%.c_gen=%)) $@
+	$(HOST_OUT_EXECUTABLES)/bin_to_c $(@:%.c_gen=%.bin) $(notdir $(@:%.c_gen=%)) $@
 
 LOCAL_GENERATED_SOURCES += $(GEN)
 LOCAL_C_INCLUDES := $(INTERMEDIATES)/gen
