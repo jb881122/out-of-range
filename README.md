@@ -62,7 +62,6 @@ Once the configuration is added, compile and test the tool to make sure it works
 ## Room for Improvement
 
 - Adding configurations for more bootloaders and devices
-- Allowing this to be built within an Android build environment, so that custom ROMs can be made with this tool integrated
 
 ## Licensing
 

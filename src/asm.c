@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../gen/patch_code.c"
+#include "patch_code.c_gen"
 
 size_t patch_code_len = sizeof(patch_code);
 

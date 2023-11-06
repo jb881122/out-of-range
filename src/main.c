@@ -63,12 +63,12 @@ void print_help() {
     printf("OutOfRange: Load unsigned boot images on some Android devices with locked bootloaders\n");
 
     printf("\nCommands:\n");
-    for(int i = 0; i < num_commands; i++) {
+    for(size_t i = 0; i < num_commands; i++) {
         printf("    %s: %s\n", commands[i].cmd_switch, commands[i].description);
     }
 
     printf("\nSyntax:\n");
-    for(int i = 0; i < num_commands; i++) {
+    for(size_t i = 0; i < num_commands; i++) {
         printf("    oor %s %s\n", commands[i].cmd_switch, commands[i].syntax);
     }
 }
