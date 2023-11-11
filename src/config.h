@@ -27,6 +27,15 @@ typedef struct bootloader_config {
     /* The size in bytes of the boot partition on this device */
     uint32_t max_boot_img_size;
 
+    /* The size in bytes of the maximum amount of aboot code to store in
+         a patched image
+       It can be nice to shorten this to limit how much larger the patched
+         image is than the original. However, shortening it too much will
+         result in bugs as some code ends up corrupted
+       For a conservative, reliable approach, store the entirety of the code by
+         setting this very large, e.g. 0x10000000 */
+    uint32_t max_stored_code;
+
     /* The address of the mmc_boot_fifo_read function
        Look for where the following string is printed:
          "Error No.%d: Failure on data transfer from the                 Card(RCA:%x)"

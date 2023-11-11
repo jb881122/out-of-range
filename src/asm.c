@@ -80,6 +80,7 @@ char *make_exploit_ramdisk(char *aboot_code, size_t aboot_code_len,
     uint32_t func_addr = 0;
     uint32_t fifo_read_offset = 0;
     size_t udf_locs[NUM_UDFS];
+    size_t stored_code_len = 0;
 
     if(output_len) {
         *output_len = 0;
@@ -89,7 +90,9 @@ char *make_exploit_ramdisk(char *aboot_code, size_t aboot_code_len,
         goto out;
     }
 
-    ramdisk_len = 0x800 + aboot_code_len;
+    stored_code_len = aboot_code_len < config->max_stored_code ?
+            aboot_code_len : config->max_stored_code;
+    ramdisk_len = 0x800 + stored_code_len;
 
     sub_ret = get_udf_offsets(udf_locs, NUM_UDFS, patch_code, patch_code_len);
     if(sub_ret) {
@@ -103,7 +106,7 @@ char *make_exploit_ramdisk(char *aboot_code, size_t aboot_code_len,
 
     patched_aboot = ramdisk + 0x800;
     memcpy(ramdisk, patch_code, patch_code_len);
-    memcpy(patched_aboot, aboot_code, aboot_code_len);
+    memcpy(patched_aboot, aboot_code, stored_code_len);
 
     le_uint32_write(config->mmc_boot_fifo_read, ramdisk, udf_locs[UDF_MBFRP]);
     le_uint32_write(config->mmc_boot_fifo_read_len, ramdisk, udf_locs[UDF_MBFRL]);
