@@ -26,7 +26,7 @@ bootloader_config configs[] = {
     },
     {
         .code_crc = 0x0DE7CE16,
-        .name = "G730AUCUANE2",
+        .name = "FAJP_G730AUCUANE2",
         .img_base = 0x88E00000,
         .img_end = 0x89000000,
         .max_boot_img_size = 10485760,
@@ -348,7 +348,7 @@ bootloader_config configs[] = {
     },
     {
         .code_crc = 0x7ECC3B24,
-        .name = "I545VRUGOC1",
+        .name = "FAJP_I545VRUGOC1",
         .img_base = 0x88E00000,
         .img_end = 0x89100000,
         .max_boot_img_size = 10485760,
