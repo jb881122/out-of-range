@@ -103,6 +103,7 @@ char *make_exploit_ramdisk(char *aboot_code, size_t aboot_code_len,
     if(!ramdisk) {
         goto out;
     }
+    memset(ramdisk, 0, 0x800);
 
     patched_aboot = ramdisk + 0x800;
     memcpy(ramdisk, patch_code, patch_code_len);
