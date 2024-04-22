@@ -1,0 +1,51 @@
+cc_binary_host {
+    name: "bin_to_c",
+    
+    cflags: [
+        "-std=c99",
+    ],
+    srcs: [
+        "src/bin_to_c.c",
+        "src/file_utils.c",
+    ],
+}
+
+gensrcs {
+    name: "patch_code",
+    tools: [
+        "bin_to_c",
+    ],
+    cmd: "mkdir -p $(genDir)/$(in) " +
+        "&& $(location bin_to_c) " +
+        "  $(in) patch_code $(out)",
+    srcs: [
+        "obj-arm/patch_code.bin",
+    ],
+    output_extension: "c",
+}
+
+cc_binary {
+    name: "oor",
+    static_executable: true,
+    
+    cflags: [
+        "-std=c99",
+    ],
+    srcs: [
+        "src/aboot_image.c",
+        "src/boot_image.c",
+        "src/cmd_patch.c",
+        "src/cmd_verify.c",
+        "src/file_utils.c",
+        "src/asm.c",
+        "src/cmd_crc.c",
+        "src/cmd_redirect.c",
+        "src/config.c",
+        "src/little_endian.c",
+        "src/cmd_list.c",
+        "src/cmd_undo.c",
+        "src/crc.c",
+        "src/main.c",
+        ":patch_code",
+    ],
+}
