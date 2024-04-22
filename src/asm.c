@@ -9,9 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "patch_code.c_gen"
-
-size_t patch_code_len = sizeof(patch_code);
+extern char patch_code[];
+extern size_t patch_code_len;
 
 void add_slide_thumb(char *code, size_t offset, size_t len, uint32_t img_base) {
     size_t curr_pos = offset;

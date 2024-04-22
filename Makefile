@@ -10,20 +10,17 @@ ASM_MODULES := patch_code
 BIN_TO_C_MODULES := bin_to_c file_utils
 
 OOR_OBJS := $(addsuffix .o,$(addprefix obj-target/,$(OOR_MODULES)))
-ASM_GEN := $(addsuffix .c_gen,$(addprefix gen/,$(ASM_MODULES)))
+ASM_GEN := $(addsuffix .c,$(addprefix gen/,$(ASM_MODULES)))
 BIN_TO_C_OBJS := $(addsuffix .o,$(addprefix obj-host/,$(BIN_TO_C_MODULES)))
 
 all: bin/oor$(TARGET_SUFFIX)
 
-bin/oor$(TARGET_SUFFIX): $(OOR_OBJS) | bin
-	$(TARGET_CC) $(TARGET_CFLAGS) -o $@ $(OOR_OBJS)
+bin/oor$(TARGET_SUFFIX): $(OOR_OBJS) $(ASM_GEN) | bin
+	$(TARGET_CC) $(TARGET_CFLAGS) -o $@ $(OOR_OBJS) $(ASM_GEN)
 	$(TARGET_STRIP) $@
 
 bin:
 	mkdir -p $@
-
-obj-target/asm.o: src/asm.c src/*.h $(ASM_GEN) | obj-target
-	$(TARGET_CC) $(TARGET_CFLAGS) -std=c99 -Igen -c -o $@ $<
 
 obj-target/%.o: src/%.c src/*.h | obj-target
 	$(TARGET_CC) $(TARGET_CFLAGS) -std=c99 -c -o $@ $<
@@ -31,8 +28,8 @@ obj-target/%.o: src/%.c src/*.h | obj-target
 obj-target:
 	mkdir -p $@
 
-gen/%.c_gen: obj-arm/%.bin tools/bin_to_c | gen
-	./tools/bin_to_c $< $(@:gen/%.c_gen=%) $@
+gen/%.c: obj-arm/%.bin tools/bin_to_c | gen
+	./tools/bin_to_c $< $(@:gen/%.c=%) $@
 
 gen:
 	mkdir -p $@

@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-const char begin_template[] = "char %s[] = {\n    ";
-#define BT_EMPTY_LEN (sizeof("char [] = {\n    ") - 1)
+const char begin_template[] = "#include <stddef.h>\nchar %s[] = {\n    ";
+#define BT_EMPTY_LEN (sizeof("#include <stddef.h>\nchar [] = {\n    ") - 1)
 
 const char byte_format[] = "0x%02X";
 #define BF_LEN (sizeof("0x00") - 1)
@@ -21,10 +21,14 @@ const char per_16_separator[] = ",\n    ";
 const char ending[] = "\n};\n";
 #define ENDING_LEN (sizeof(ending) - 1)
 
+const char size_template[] = "size_t %s_len = sizeof(%s);\n";
+#define ST_EMPTY_LEN (sizeof("size_t _len = sizeof();\n") - 1)
+
 size_t get_output_size(size_t num_bytes, char *var_name) {
+    size_t varlen = strlen(var_name);
     size_t ret = BT_EMPTY_LEN;
 
-    ret += strlen(var_name);
+    ret += varlen;
     for(size_t i = 0; i < num_bytes; i++) {
         ret += BF_LEN;
         if(i != num_bytes - 1) {
@@ -36,6 +40,10 @@ size_t get_output_size(size_t num_bytes, char *var_name) {
         }
     }
     ret += ENDING_LEN;
+
+    ret += ST_EMPTY_LEN;
+    ret += 2 * varlen;
+
     ret += 1;  /* terminating null byte */
 
     return ret;
@@ -65,6 +73,8 @@ int write_output_text(char *output, char *bytes, size_t num_bytes, char *var_nam
         }
     }
     OUT_APPEND(out_ptr, ending);
+
+    OUT_APPEND(out_ptr, size_template, var_name, var_name);
 
     ret = 0;
 out:
