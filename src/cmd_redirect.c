@@ -5,6 +5,7 @@
 #include "crc.h"
 #include "asm.h"
 #include "little_endian.h"
+#include "bl_check.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -69,16 +70,8 @@ int cmd_redirect_main(int argc, char *argv[]) {
     bl_code = bootloader->code_ptr;
     bl_code_len = bootloader->code_size;
 
-    bl_crc = crc32(bl_code, bl_code_len);
-    for(size_t i = 0; i < num_configs; i++) {
-        if(configs[i].code_crc == bl_crc) {
-            config = &configs[i];
-            printf("Supported bootloader found: %s\n", config->name);
-            break;
-        }
-    }
+    config = get_config(bl_code, bl_code_len);
     if(!config) {
-        printf("Unsupported bootloader\n");
         goto out;
     }
 
@@ -88,6 +81,7 @@ int cmd_redirect_main(int argc, char *argv[]) {
         goto out;
     }
 
+    bl_crc = crc32(bl_code, bl_code_len);
     image_kernel = make_redirect_binary(argv[3], bl_crc, &image_kernel_len);
     if(!image_kernel) {
         printf("Failed to generate redirect binary\n");

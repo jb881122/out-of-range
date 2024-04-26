@@ -5,6 +5,7 @@
 #include "crc.h"
 #include "asm.h"
 #include "little_endian.h"
+#include "bl_check.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -43,16 +44,8 @@ int cmd_patch_main(int argc, char *argv[]) {
     bl_code = bootloader->code_ptr;
     bl_code_len = bootloader->code_size;
 
-    bl_crc = crc32(bl_code, bl_code_len);
-    for(size_t i = 0; i < num_configs; i++) {
-        if(configs[i].code_crc == bl_crc) {
-            config = &configs[i];
-            printf("Supported bootloader found: %s\n", config->name);
-            break;
-        }
-    }
+    config = get_config(bl_code, bl_code_len);
     if(!config) {
-        printf("Unsupported bootloader\n");
         goto out;
     }
 
@@ -81,7 +74,9 @@ int cmd_patch_main(int argc, char *argv[]) {
         printf("Failed to embed original boot image\n");
         goto out;
     }
+
     image_kernel[3] = 1;
+    bl_crc = crc32(bl_code, bl_code_len);
     le_uint32_write(bl_crc, image_kernel, 4);
 
     image_ramdisk = make_exploit_ramdisk(bl_code, bl_code_len, config,

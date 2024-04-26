@@ -45,6 +45,7 @@ cc_binary {
         "src/cmd_list.c",
         "src/cmd_undo.c",
         "src/crc.c",
+        "src/bl_check.c",
         "src/main.c",
         ":patch_code",
     ],
