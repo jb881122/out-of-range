@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef CRC_PERMISSIVE
+
 char *find_bytes(char *mem, size_t mem_len, char *to_find, size_t to_find_len) {
     char *ret = NULL;
 
@@ -59,21 +61,6 @@ out:
     return ret;
 }
 
-bootloader_config *get_config_from_crc(char *bl_code, size_t bl_code_len) {
-    bootloader_config *config = NULL;
-    uint32_t bl_crc = 0;
-
-    bl_crc = crc32(bl_code, bl_code_len);
-    for(size_t i = 0; i < num_configs; i++) {
-        if(configs[i].code_crc == bl_crc) {
-            config = &configs[i];
-            break;
-        }
-    }
-
-    return config;
-}
-
 char bl_equals_str[] = "androidboot.bootloader=%s";
 
 bootloader_config *get_config_from_string(char *bl_code, size_t bl_code_len) {
@@ -98,21 +85,41 @@ out:
     return config;
 }
 
+#endif /* CRC_PERMISSIVE */
+
+bootloader_config *get_config_from_crc(char *bl_code, size_t bl_code_len) {
+    bootloader_config *config = NULL;
+    uint32_t bl_crc = 0;
+
+    bl_crc = crc32(bl_code, bl_code_len);
+    for(size_t i = 0; i < num_configs; i++) {
+        if(configs[i].code_crc == bl_crc) {
+            config = &configs[i];
+            break;
+        }
+    }
+
+    return config;
+}
+
 bootloader_config *get_config(char *bl_code, size_t bl_code_len) {
     bootloader_config *ret = NULL;
 
-    if(bl_code_len < 0x40000) {
-        goto out;
-    }
-
     ret = get_config_from_crc(bl_code, bl_code_len);
 
+#ifdef CRC_PERMISSIVE
     if(!ret) {
+        /* Make sure too-small bootloaders fail gracefully */
+        if(bl_code_len < 0x40000) {
+            goto out;
+        }
+
         ret = get_config_from_string(bl_code, bl_code_len);
         if(ret) {
             printf("WARNING: CRC Mismatch\n");
         }
     }
+#endif
 
 out:
     if(ret) {
