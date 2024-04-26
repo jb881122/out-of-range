@@ -114,12 +114,12 @@ bootloader_config *get_config(char *bl_code, size_t bl_code_len) {
         }
     }
 
+out:
     if(ret) {
         printf("Bootloader found: %s\n", ret->name);
     } else {
         printf("Unsupported bootloader\n");
     }
 
-out:
     return ret;
 }
