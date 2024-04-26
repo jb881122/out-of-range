@@ -119,9 +119,9 @@ bootloader_config *get_config(char *bl_code, size_t bl_code_len) {
             printf("WARNING: CRC Mismatch\n");
         }
     }
-#endif
 
 out:
+#endif
     if(ret) {
         printf("Bootloader found: %s\n", ret->name);
     } else {
